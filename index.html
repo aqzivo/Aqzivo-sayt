@@ -6,105 +6,228 @@
   <title>Aqzivo — Plugins</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
+    :root {
+      --bg: #0a0d16;
+      --card-bg: rgba(21, 26, 46, 0.6);
+      --purple: #8b5cf6;
+      --blue: #3b82f6;
+      --cyan: #22d3ee;
+      --text: #f8fafc;
+      --dim: #94a3b8;
+      --border: rgba(139, 92, 246, 0.15);
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #080b14;
-      color: #e8eaf6;
+      background-color: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       padding-bottom: 90px;
+      overflow-x: hidden;
+      position: relative;
     }
-    .container { padding: 20px 16px; max-width: 600px; margin: 0 auto; }
+
+    /* Orqa fondagi chiroyli nurlar */
+    .glow-1, .glow-2 {
+      position: fixed;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: -1;
+      opacity: 0.4;
+    }
+    .glow-1 { top: -100px; left: -100px; background: var(--purple); }
+    .glow-2 { bottom: -100px; right: -100px; background: var(--blue); }
+
+    .container { padding: 24px 16px; max-width: 600px; margin: 0 auto; }
     
     /* Sarlavha */
-    .header { text-align: center; margin-bottom: 24px; }
-    .logo { font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #a78bfa, #22d3ee); -webkit-background-clip: text; color: transparent; }
-    .subtitle { color: #8b94b8; font-size: 13px; margin-top: 4px; }
+    .header { text-align: center; margin-bottom: 28px; }
+    .logo-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(139, 92, 246, 0.1);
+      padding: 6px 16px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .logo-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .logo { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, #a78bfa, #22d3ee); -webkit-background-clip: text; color: transparent; letter-spacing: 0.5px; }
+    .subtitle { color: var(--dim); font-size: 13px; margin-top: 12px; font-weight: 500; }
 
     /* Qidiruv */
-    .search-box { margin-bottom: 20px; position: relative; }
-    .search-box input {
-      width: 100%; padding: 12px 16px; border-radius: 12px;
-      border: 1px solid rgba(139,92,246,0.2); background: #12172a;
-      color: white; font-size: 14px; outline: none;
+    .search-box { margin-bottom: 24px; position: relative; }
+    .search-box svg {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 18px; stroke: var(--dim);
     }
-    .search-box input:focus { border-color: #8b5cf6; }
+    .search-box input {
+      width: 100%; padding: 14px 16px 14px 42px; border-radius: 14px;
+      border: 1px solid var(--border); background: rgba(21, 26, 46, 0.8);
+      color: white; font-size: 14px; outline: none; transition: 0.3s;
+      backdrop-filter: blur(10px);
+    }
+    .search-box input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(139,92,246,0.2); }
 
     /* Kartochkalar */
-    .grid { display: flex; flex-direction: column; gap: 12px; }
+    .grid { display: flex; flex-direction: column; gap: 14px; }
+    
     .card {
-      background: #12172a; border: 1px solid rgba(139,92,246,0.2);
-      border-radius: 16px; padding: 16px; display: flex; gap: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      animation: slideUp 0.4s ease-out backwards;
     }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: linear-gradient(to bottom, var(--purple), var(--cyan));
+    }
+
     .card-icon {
-      width: 60px; height: 60px; border-radius: 12px;
-      background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(59,130,246,0.2));
+      width: 64px; height: 64px; border-radius: 14px;
+      background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(59,130,246,0.1));
+      border: 1px solid rgba(139,92,246,0.2);
       display: flex; align-items: center; justify-content: center;
-      font-size: 24px; flex-shrink: 0;
+      font-size: 26px; flex-shrink: 0;
     }
-    .card-content { flex: 1; }
-    .card-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-    .card-desc { font-size: 12px; color: #8b94b8; margin-bottom: 8px; }
-    .card-version { font-size: 11px; color: #60a5fa; background: rgba(59,130,246,0.15); padding: 3px 8px; border-radius: 10px; display: inline-block; margin-bottom: 10px; }
+    
+    .card-content { flex: 1; min-width: 0; }
+    .card-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: #fff; }
+    .card-desc { font-size: 13px; color: var(--dim); margin-bottom: 10px; line-height: 1.4; }
+    .card-version { 
+      font-size: 11px; color: var(--cyan); background: rgba(34, 211, 238, 0.1); 
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      padding: 3px 8px; border-radius: 8px; display: inline-block; margin-bottom: 12px; font-weight: 600;
+    }
     
     .btn {
-      width: 100%; padding: 10px; border: none; border-radius: 10px;
-      background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-      color: white; font-weight: 600; font-size: 13px; cursor: pointer;
+      width: 100%; padding: 11px; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      color: white; font-weight: 700; font-size: 13px; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 6px;
+      box-shadow: 0 4px 15px rgba(139,92,246,0.3);
+      transition: transform 0.1s, opacity 0.2s;
     }
-    .btn:active { opacity: 0.8; }
+    .btn:active { transform: scale(0.97); opacity: 0.8; }
+    .btn svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2.5; }
 
     /* Pastki menyu */
     .bottom-nav {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: #0d1220; border-top: 1px solid rgba(139,92,246,0.2);
-      display: flex; padding: 10px 0; padding-bottom: max(10px, env(safe-area-inset-bottom));
+      position: fixed; bottom: 16px; left: 16px; right: 16px;
+      background: rgba(13, 18, 32, 0.85);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      display: flex; padding: 8px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       z-index: 100;
+      max-width: 500px; margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
+    
     .nav-btn {
-      flex: 1; background: none; border: none; color: #8b94b8;
-      font-size: 12px; font-weight: 600; padding: 8px;
+      flex: 1; background: none; border: none; color: var(--dim);
+      font-size: 12px; font-weight: 600; padding: 10px 0;
       display: flex; flex-direction: column; align-items: center; gap: 4px;
+      border-radius: 14px; transition: 0.3s; cursor: pointer;
     }
-    .nav-btn.active { color: #a78bfa; }
     .nav-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+    
+    .nav-btn.active { 
+      color: white; 
+      background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(59,130,246,0.1));
+    }
+    .nav-btn.active svg { stroke: #a78bfa; filter: drop-shadow(0 0 5px rgba(167,139,250,0.5)); }
 
     /* Men haqimda */
-    .about { display: none; text-align: center; padding: 20px; background: #12172a; border-radius: 20px; }
-    .about img { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 16px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); }
-    .about h2 { font-size: 22px; margin-bottom: 8px; }
-    .about p { font-size: 14px; color: #8b94b8; line-height: 1.6; }
+    .about-card { 
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 24px; padding: 30px 20px; text-align: center;
+      backdrop-filter: blur(16px); animation: slideUp 0.4s ease-out;
+    }
+    .avatar {
+      width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 16px;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; font-weight: 800;
+      box-shadow: 0 0 20px rgba(139,92,246,0.4);
+    }
+    .about-card h2 { font-size: 24px; margin-bottom: 6px; }
+    .about-role {
+      display: inline-block; font-size: 12px; color: var(--cyan); font-weight: 600;
+      background: rgba(34, 211, 238, 0.1); padding: 4px 12px; border-radius: 100px; margin-bottom: 20px;
+    }
+    .about-text {
+      font-size: 14px; color: var(--dim); line-height: 1.6; text-align: left;
+      background: rgba(0,0,0,0.2); padding: 16px; border-radius: 16px;
+    }
+    .about-text b { color: var(--text); }
 
     .page { display: none; }
     .page.active { display: block; }
   </style>
 </head>
 <body>
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+
   <div class="container">
+    <!-- Sarlavha -->
     <div class="header">
-      <div class="logo">Aqzivo</div>
-      <div class="subtitle">Minecraft PE Plugins</div>
+      <div class="logo-wrap">
+        <div class="logo-icon">📦</div>
+        <div class="logo">Aqzivo</div>
+      </div>
+      <div class="subtitle">Minecraft PE Plugins & Addons</div>
     </div>
 
     <!-- Pluginlar sahifasi -->
     <div class="page active" id="page-plugins">
       <div class="search-box">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         <input type="text" id="searchInput" placeholder="Plaginni qidirish..." oninput="renderPlugins()" />
       </div>
       <div class="grid" id="pluginGrid">
-        <div style="text-align:center; color:#8b94b8; padding:20px;">Yuklanmoqda...</div>
+        <div style="text-align:center; color:var(--dim); padding:20px;">Yuklanmoqda...</div>
       </div>
     </div>
 
     <!-- Men haqimda sahifasi -->
     <div class="page" id="page-about">
-      <div class="about">
-        <img src="https://ui-avatars.com/api/?name=Aqzivo&background=8b5cf6&color=fff&size=200" alt="Aqzivo" />
+      <div class="about-card">
+        <div class="avatar">A</div>
         <h2>Aqzivo</h2>
-        <p><b>MCPE Plugin Developer</b><br/><br/>
-        Salom! Men Minecraft PE uchun turli xil plaginlar va qo'shimchalar yasayman. 
-        Asosan 0.14.3 va 0.15.10 versiyalari uchun ishlayman. Barcha plaginlarim bepul.</p>
+        <div class="about-role">MCPE Developer</div>
+        <div class="about-text">
+          Salom! Men <b>Aqzivo</b> — Minecraft PE uchun turli xil plaginlar va qo'shimchalar yasayman. 
+          <br/><br/>
+          Asosan <b>0.14.3</b> va <b>0.15.10</b> versiyalari uchun ishlayman. Barcha plaginlarim mutlaqo bepul. 
+          Biror muammo bo'lsa, bot orqali bog'lanishingiz mumkin!
+        </div>
       </div>
     </div>
   </div>
@@ -130,18 +253,16 @@
     
     let allPlugins = [];
 
-    // Ma'lumotlarni yuklash
     async function loadData() {
       try {
         const res = await fetch(JSON_URL);
         allPlugins = await res.json();
         renderPlugins();
       } catch (e) {
-        document.getElementById("pluginGrid").innerHTML = `<div style="color:red; text-align:center;">Xatolik: Ma'lumot yuklanmadi</div>`;
+        document.getElementById("pluginGrid").innerHTML = `<div style="color:#ef4444; text-align:center;">Xatolik: Ma'lumot yuklanmadi</div>`;
       }
     }
 
-    // Plaginlarni ekranga chiqarish
     function renderPlugins() {
       const grid = document.getElementById("pluginGrid");
       const query = document.getElementById("searchInput").value.toLowerCase();
@@ -152,26 +273,26 @@
       );
 
       if (filtered.length === 0) {
-        grid.innerHTML = `<div style="text-align:center; color:#8b94b8; padding:20px;">Hech narsa topilmadi</div>`;
+        grid.innerHTML = `<div style="text-align:center; color:var(--dim); padding:20px;">Hech narsa topilmadi 😔</div>`;
         return;
       }
 
-      grid.innerHTML = filtered.map(p => `
-        <div class="card">
-          <div class="card-icon">📦</div>
+      grid.innerHTML = filtered.map((p, index) => `
+        <div class="card" style="animation-delay: ${index * 0.1}s">
+          <div class="card-icon">${p.image ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" />` : '📦'}</div>
           <div class="card-content">
             <div class="card-title">${p.name}</div>
             <div class="card-desc">${p.desc}</div>
-            <div class="card-version">Versiya: ${p.version}</div>
+            <div class="card-version">v${p.version}</div>
             <button class="btn" onclick="download('${p.download}')">
-              ⬇️ Yuklab olish
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Yuklab olish
             </button>
           </div>
         </div>
       `).join('');
     }
 
-    // Yuklab olish funksiyasi
     function download(url) {
       if (!url) return;
       if (tg) {
@@ -181,7 +302,6 @@
       }
     }
 
-    // Sahifalarni almashtirish
     function switchPage(pageName, btn) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('page-' + pageName).classList.add('active');
@@ -190,7 +310,6 @@
       btn.classList.add('active');
     }
 
-    // Ishga tushirish
     loadData();
   </script>
 </body>
